@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2563EB">
+<title>SherpurBus — বাস সময়সূচি</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+/* ===== DESIGN TOKENS ===== */
+:root {
+  --primary:       #2563EB;
+  --primary-dark:  #1d4ed8;
+  --primary-light: #dbeafe;
+  --primary-mid:   #3b82f6;
+  --secondary:     #22C55E;
+  --secondary-dark:#16a34a;
+  --secondary-light:#dcfce7;
+  --accent:        #FBBF24;
+  --accent-dark:   #d97706;
+  --accent-light:  #fef3c7;
+  --bg:            #F3F4F6;
+  --bg-card:       #ffffff;
+  --bg-surface:    #e5e7eb;
+  --text:          #111827;
+  --text-2:        #374151;
+  --text-3:        #9ca3af;
+  --border:        #e5e7eb;
+  --border-focus:  #2563EB;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+  --shadow:        0 4px 16px rgba(37,99,235,0.12);
+  --shadow-lg:     0 10px 32px rgba(37,99,235,0.15);
+  --radius:        14px;
+  --radius-sm:     8px;
+  --radius-pill:   999px;
+  --t:             0.2s;
+  --ease:          cubic-bezier(.4,0,.2,1);
+  /* section colors */
+  --morning-c:  #2563EB;
+  --noon-c:     #FBBF24;
+  --evening-c:  #8b5cf6;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Noto Sans Bengali','Plus Jakarta Sans','Hind Siliguri','SolaimanLipi',Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+
+/* ===== PAGE ===== */
+.page{max-width:700px;margin:0 auto}
+
+/* ===== HEADER ===== */
+header{
+background:linear-gradient(135deg,#1d4ed8 0%,#2563EB 55%,#3b82f6 100%);
+color:#fff;padding:18px 16px 0;position:relative;overflow:hidden;
+-webkit-transform:translateZ(0);transform:translateZ(0);
+}
+header::before{
+content:’’;position:absolute;top:-40px;right:-40px;
+width:180px;height:180px;border-radius:50%;
+background:rgba(255,255,255,0.06);pointer-events:none;
+}
+header::after{
+content:’’;display:block;height:28px;
+background:#F3F4F6;
+border-radius:28px 28px 0 0;
+margin-top:16px;
+position:relative;z-index:1;
+}
+.header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:9px}
+.brand-icon{
+width:36px;height:36px;background:rgba(255,255,255,0.18);
+border:1.5px solid rgba(255,255,255,0.3);border-radius:10px;
+display:flex;align-items:center;justify-content:center;
+}
+.brand-icon svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-name{font-family:‘Plus Jakarta Sans’,sans-serif;font-size:1.05rem;font-weight:900;letter-spacing:-.3px;color:#fff}
+.lang-toggle{display:flex;background:rgba(255,255,255,0.18);border-radius:999px;padding:3px;gap:2px;border:1.5px solid rgba(255,255,255,0.3)}
+.lang-btn{padding:5px 14px;border-radius:999px;background:transparent;color:rgba(255,255,255,0.7);font-family:‘Plus Jakarta Sans’,‘Hind Siliguri’,Arial,sans-serif;font-size:.75rem;font-weight:700;transition:all .2s ease;letter-spacing:.5px;border:none;cursor:pointer;line-height:1.2}
+.lang-btn.active{background:#ffffff;color:#2563EB}
+.lang-btn:not(.active):hover{color:#fff}
+.hero-wrap{text-align:center;padding-bottom:4px}
+.hero-title{font-family:‘Plus Jakarta Sans’,sans-serif;font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:#fff;letter-spacing:-.5px;line-height:1.2;margin-bottom:4px}
+.hero-sub{font-size:.82rem;color:rgba(255,255,255,0.72)}
+
+/* ===== SEARCH HERO ===== */
+.search-hero{
+background:#fff;border-radius:18px;padding:16px;
+margin:-6px 12px 14px;box-shadow:var(–shadow-lg);
+border:1.5px solid var(–border);position:relative;z-index:10;
+}
+.from-to-row{display:grid;grid-template-columns:1fr 38px 1fr;gap:7px;align-items:end;margin-bottom:12px}
+.ft-box{
+background:var(–bg-surface);border:1.5px solid var(–border);
+border-radius:12px;padding:10px 12px;position:relative;
+transition:border-color var(–t),box-shadow var(–t),background var(–t);
+min-width:0;
+}
+.ft-box:focus-within{border-color:var(–primary);box-shadow:0 0 0 3px var(–primary-light);background:#fff}
+.ft-label{display:flex;align-items:center;gap:5px;font-size:.6rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(–text-3);margin-bottom:5px}
+.ft-label svg{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.from-label{color:var(–primary)}
+.to-label{color:var(–secondary-dark)}
+.ft-input{width:100%;border:none;outline:none;background:transparent;font-family:‘Noto Sans Bengali’,‘Plus Jakarta Sans’,sans-serif;font-size:.88rem;font-weight:600;color:var(–text);caret-color:var(–primary)}
+.ft-input::placeholder{color:var(–text-3);font-weight:400}
+.suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1.5px solid var(–primary-light);border-radius:12px;overflow:hidden;z-index:300;box-shadow:var(–shadow-lg);display:none}
+.suggestions.open{display:block;animation:popIn .15s var(–ease) both}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.sug-item{padding:10px 13px;font-size:.83rem;color:var(–text-2);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background var(–t);border-bottom:1px solid #f1f5f9}
+.sug-item:last-child{border-bottom:none}
+.sug-item:hover{background:var(–primary-light);color:var(–primary)}
+.sug-item svg{width:13px;height:13px;fill:none;stroke:var(–primary);stroke-width:2;stroke-linecap:round;flex-shrink:0}
+.swap-btn{width:34px;height:34px;margin-bottom:2px;background:var(–primary-light);border:1.5px solid var(–primary);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all var(–t) var(–ease);flex-shrink:0;align-self:end}
+.swap-btn:hover{background:var(–primary);transform:rotate(180deg)}
+.swap-btn:hover svg{stroke:#fff}
+.swap-btn svg{width:15px;height:15px;stroke:var(–primary);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:stroke var(–t)}
+.time-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.time-chip{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 4px;border-radius:999px;border:1.5px solid #e5e7eb;background:#f3f4f6;color:#374151;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .2s ease;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.time-chip svg{width:11px;height:11px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;min-width:11px}
+.time-chip.active{background:#2563EB;border-color:#2563EB;color:#ffffff;box-shadow:0 2px 10px rgba(37,99,235,0.3)}
+.time-chip:hover:not(.active){border-color:#2563EB;color:#2563EB;background:#dbeafe}
+.search-cta{width:100%;padding:13px;background:#2563EB;background:linear-gradient(135deg,#2563EB,#3b82f6);border:none;border-radius:12px;color:#ffffff;font-family:‘Plus Jakarta Sans’,‘Hind Siliguri’,Arial,sans-serif;font-size:.95rem;font-weight:700;letter-spacing:.2px;box-shadow:0 3px 14px rgba(37,99,235,0.35);transition:all .2s ease;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer}
+.search-cta svg{width:17px;height:17px;stroke:#ffffff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.search-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(37,99,235,0.42)}
+.search-cta:active{transform:translateY(0)}
+
+/* ===== ROUTE SWITCHER ===== */
+.route-switcher{display:flex;gap:8px;overflow-x:auto;padding:0 12px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.route-switcher::-webkit-scrollbar{display:none}
+.route-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(–radius-pill);border:1.5px solid var(–border);background:#fff;color:var(–text-2);font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all var(–t) var(–ease);flex-shrink:0}
+.route-btn svg{width:13px;height:13px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.route-btn:hover{border-color:#2563EB;color:#2563EB;background:#dbeafe}
+.route-btn.active{background:#2563EB;border-color:#2563EB;color:#ffffff;box-shadow:0 2px 10px rgba(37,99,235,0.28)}
+
+/* ===== STATS BAR ===== */
+.stats-bar{display:flex;gap:7px;flex-wrap:wrap;padding:0 12px 12px}
+.stat-chip{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(–border);border-radius:var(–radius-pill);padding:5px 12px;font-size:.72rem;color:var(–text-2);font-weight:600;box-shadow:var(–shadow-sm)}
+.stat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ===== TAB NAV ===== */
+.tab-nav{display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;background:#fff;border-bottom:2px solid var(–border);-webkit-overflow-scrolling:touch}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{flex:1;min-width:90px;padding:11px 8px 9px;background:transparent;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;color:var(–text-3);font-family:‘Plus Jakarta Sans’,sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all var(–t);white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tab-btn .ti{font-size:.9rem}
+.tab-btn:hover{color:var(–primary);background:var(–primary-light)}
+.tab-btn.active{color:var(–primary);border-bottom-color:var(–primary)}
+
+/* ===== CONTENT ===== */
+.content{padding:0 10px 110px}
+.section{display:none}
+.section.active{display:block}
+.section-head{display:flex;align-items:center;gap:8px;padding:16px 2px 10px;border-bottom:1.5px solid var(–border);margin-bottom:12px}
+.section-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-icon svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.section-head h2{font-family:‘Plus Jakarta Sans’,sans-serif;font-size:.9rem;font-weight:700;color:var(–text)}
+.count-badge{margin-left:auto;background:var(–primary-light);color:var(–primary);border-radius:var(–radius-pill);padding:2px 10px;font-size:.68rem;font-weight:700;font-family:‘Plus Jakarta Sans’,sans-serif}
+
+/* ===== BUS CARDS ===== */
+.card{background:#fff;border-radius:var(–radius);padding:13px 12px;margin-bottom:9px;border:1.5px solid var(–border);border-left:4px solid var(–morning-c);display:flex;justify-content:space-between;align-items:center;gap:10px;transition:transform var(–t),box-shadow var(–t);animation:fadeUp .3s var(–ease) both;box-shadow:var(–shadow-sm)}
+.card:hover{transform:translateY(-2px);box-shadow:var(–shadow)}
+.card.noon{border-left-color:var(–noon-c)}
+.card.evening{border-left-color:var(–evening-c)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-left{flex:1;min-width:0}
+.serial{font-size:.6rem;color:var(–text-3);font-weight:700;font-family:‘Plus Jakarta Sans’,monospace;margin-bottom:2px;letter-spacing:.5px}
+.bus-name{font-weight:700;font-size:.92rem;color:var(–text);margin-bottom:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-meta{display:flex;flex-wrap:wrap;gap:4px}
+.meta-chip{display:inline-flex;align-items:center;gap:3px;font-size:.67rem;border-radius:var(–radius-pill);padding:3px 8px;font-weight:600;border:1px solid transparent;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+.meta-chip svg{width:10px;height:10px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.meta-chip.time{background:var(–primary-light);color:var(–primary);border-color:#bfdbfe}
+.meta-chip.dest{background:var(–secondary-light);color:var(–secondary-dark);border-color:#bbf7d0}
+.meta-chip.place{background:var(–accent-light);color:var(–accent-dark);border-color:#fde68a}
+.phone-num{font-size:.65rem;color:var(–text-3);margin-top:6px;font-family:‘Plus Jakarta Sans’,monospace;letter-spacing:.3px}
+
+/* ===== CALL BUTTON ===== */
+.call-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:#22C55E;background:linear-gradient(135deg,#22C55E,#16a34a);color:#ffffff;border:none;border-radius:12px;padding:12px 11px;cursor:pointer;text-decoration:none;min-width:56px;min-height:56px;transition:all .2s ease;box-shadow:0 3px 10px rgba(34,197,94,0.35);flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.call-btn svg{width:17px;height:17px;stroke:#ffffff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.call-btn .call-label{font-size:.56rem;font-family:‘Plus Jakarta Sans’,Arial,sans-serif;font-weight:800;letter-spacing:1px;color:#ffffff}
+.call-btn:hover{transform:scale(1.06);box-shadow:0 5px 16px rgba(34,197,94,0.5)}
+.call-btn:active{transform:scale(.96)}
+
+/* ===== DIV CARDS (multi-phone) ===== */
+.div-card{background:#fff;border-radius:var(–radius);padding:13px 12px;margin-bottom:9px;border:1.5px solid var(–border);border-left:4px solid var(–primary);box-shadow:var(–shadow-sm);transition:transform var(–t),box-shadow var(–t);animation:fadeUp .3s var(–ease) both}
+.div-card:hover{transform:translateY(-2px);box-shadow:var(–shadow)}
+.div-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.div-card-name{font-weight:700;font-size:.9rem;color:var(–text);line-height:1.3}
+.div-route-info{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.div-time-row{font-size:.7rem;color:var(–text-2);margin-bottom:8px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.div-time-row svg{width:11px;height:11px;flex-shrink:0;fill:none;stroke:var(–primary);stroke-width:2;stroke-linecap:round}
+.phone-grid{display:flex;flex-wrap:wrap;gap:5px}
+.phone-pill{display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0;border-radius:999px;padding:4px 10px;font-size:.68rem;font-weight:700;font-family:‘Plus Jakarta Sans’,monospace;cursor:pointer;transition:all .2s;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.phone-pill svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.phone-pill:hover{background:#22C55E;color:#ffffff;border-color:#22C55E}
+.phone-pill:active{transform:scale(.96)}
+
+/* ===== HIGHLIGHTS ===== */
+mark{background:#fef08a;color:#78350f;border-radius:3px;padding:0 2px;font-style:normal}
+
+/* ===== NO RESULTS ===== */
+.no-results{text-align:center;padding:40px 20px;color:var(–text-3);display:none}
+.no-results .nr-icon{font-size:2.4rem;margin-bottom:10px;display:block;opacity:.5}
+.no-results p{font-size:.86rem}
+
+/* ===== DIVISION BANNER ===== */
+.div-section-banner{background:linear-gradient(90deg,var(–primary-light),var(–secondary-light));border:1px solid var(–primary-light);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.78rem;color:var(–primary);font-weight:600;display:flex;align-items:center;gap:7px}
+.div-section-banner svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;flex-shrink:0}
+
+/* ===== FOOTER ===== */
+footer{text-align:center;padding:8px 20px;background:#fff;border-top:1px solid #e5e7eb;position:fixed;bottom:0;left:0;right:0;z-index:50;font-family:‘Plus Jakarta Sans’,‘Hind Siliguri’,Arial,sans-serif}
+.footer-credit{font-size:.66rem;color:#9ca3af;margin-bottom:4px}
+.footer-credit span{color:#374151;font-weight:700}
+.footer-socials{display:flex;align-items:center;justify-content:center;gap:8px}
+.social-link{display:inline-flex;align-items:center;gap:4px;font-size:.63rem;font-weight:600;color:#6b7280;text-decoration:none;padding:3px 8px;border-radius:999px;border:1px solid #e5e7eb;background:#f9fafb;transition:all .15s ease}
+.social-link svg{width:11px;height:11px;flex-shrink:0;fill:currentColor}
+.social-link.x-link:hover{background:#000;color:#fff;border-color:#000}
+.social-link.gh-link:hover{background:#24292e;color:#fff;border-color:#24292e}
+.social-link.fb-link:hover{background:#1877f2;color:#fff;border-color:#1877f2}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:480px){
+.search-hero{padding:12px;margin:-4px 8px 12px;border-radius:16px}
+.from-to-row{grid-template-columns:1fr 32px 1fr;gap:5px}
+.swap-btn{width:28px;height:28px}
+.swap-btn svg{width:13px;height:13px}
+.hero-title{font-size:1.35rem}
+.time-chip{font-size:.65rem;padding:6px 3px}
+.card{padding:11px 10px;gap:8px}
+.call-btn{min-width:50px;min-height:50px;padding:10px 9px}
+.meta-chip{font-size:.63rem;padding:2px 6px;max-width:130px}
+.bus-name{font-size:.86rem}
+.route-btn{padding:6px 10px;font-size:.72rem}
+.phone-pill{font-size:.65rem;padding:3px 8px}
+}
+@media(max-width:360px){
+.from-to-row{grid-template-columns:1fr;gap:6px}
+.swap-btn{margin:0 auto;transform:rotate(90deg)!important;width:28px;height:28px}
+}
+</style>
+
+</head>
+<body>
+<div class="page">
+
+<!-- HEADER -->
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20M7 18v2M17 18v2"/><circle cx="7" cy="14" r="1" fill="#fff"/><circle cx="17" cy="14" r="1" fill="#fff"/></svg>
+      </div>
+      <span class="brand-name">SherpurBus</span>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnBN" onclick="setLang('bn')">বাং</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">ENG</button>
+    </div>
+  </div>
+  <div class="hero-wrap">
+    <h1 class="hero-title" id="heroTitle">শেরপুর বাস সময়সূচি</h1>
+    <p class="hero-sub" id="heroSub">সকল রুটের বাস ও যোগাযোগ নম্বর</p>
+  </div>
+</header>
+
+<!-- SEARCH -->
+
+<div class="search-hero">
+  <div class="from-to-row">
+    <div class="ft-box" id="fromBox">
+      <div class="ft-label from-label">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>
+        <span id="labelFrom">যাত্রা শুরু</span>
+      </div>
+      <input class="ft-input" id="fromInput"
+        data-placeholder-bn="কোথা থেকে?" data-placeholder-en="Board from?"
+        placeholder="কোথা থেকে?" autocomplete="off"
+        oninput="onFTInput('from',this.value)"
+        onfocus="onFTFocus('from')"
+        onblur="onFTBlur('from')">
+      <div class="suggestions" id="fromSug"></div>
+    </div>
+    <button class="swap-btn" onclick="swapFromTo()" title="Swap">
+      <svg viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+    </button>
+    <div class="ft-box" id="toBox">
+      <div class="ft-label to-label">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <span id="labelTo">গন্তব্য</span>
+      </div>
+      <input class="ft-input" id="toInput"
+        data-placeholder-bn="কোথায় যাবেন?" data-placeholder-en="Where to?"
+        placeholder="কোথায় যাবেন?" autocomplete="off"
+        oninput="onFTInput('to',this.value)"
+        onfocus="onFTFocus('to')"
+        onblur="onFTBlur('to')">
+      <div class="suggestions" id="toSug"></div>
+    </div>
+  </div>
+  <div class="time-row">
+    <div class="time-chip active" onclick="selectTime(this,'all')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span id="tcAll">সব সময়</span>
+    </div>
+    <div class="time-chip" onclick="selectTime(this,'morning')">
+      <svg viewBox="0 0 24 24"><path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2M4.93 19.07l1.41-1.41M12 20v2M19.07 19.07l-1.41-1.41M22 12h-2M19.07 4.93l-1.41 1.41"/><circle cx="12" cy="12" r="4"/></svg>
+      <span id="tcMorning">সকাল</span>
+    </div>
+    <div class="time-chip" onclick="selectTime(this,'noon')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42"/></svg>
+      <span id="tcNoon">দুপুর-বিকেল</span>
+    </div>
+    <div class="time-chip" onclick="selectTime(this,'evening')">
+      <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <span id="tcEvening">সন্ধ্যা-রাত</span>
+    </div>
+  </div>
+  <button class="search-cta" onclick="doSearch()">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <span id="ctaLabel">বাস খুঁজুন</span>
+  </button>
+</div>
+
+<!-- ROUTE SWITCHER -->
+
+<div class="route-switcher" id="routeSwitcher">
+  <button class="route-btn active" onclick="switchRoute('dhaka',this)">
+    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M2 10h20"/></svg>
+    <span data-bn="ঢাকা ↔ শেরপুর" data-en="Dhaka ↔ Sherpur">ঢাকা ↔ শেরপুর</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('bakshiganj',this)">
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <span data-bn="বকশীগঞ্জ → ঢাকা" data-en="Bakshiganj → Dhaka">বকশীগঞ্জ → ঢাকা</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('jhenaigati',this)">
+    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    <span data-bn="ঝিনাইগাতী → ঢাকা" data-en="Jhenaigati → Dhaka">ঝিনাইগাতী → ঢাকা</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('chittagong',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="চট্টগ্রাম বিভাগ" data-en="Chittagong Div.">চট্টগ্রাম বিভাগ</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('khulna',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="খুলনা বিভাগ" data-en="Khulna Div.">খুলনা বিভাগ</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('barisal',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="বরিশাল বিভাগ" data-en="Barisal Div.">বরিশাল বিভাগ</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('rajshahi',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="রাজশাহী বিভাগ" data-en="Rajshahi Div.">রাজশাহী বিভাগ</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('rangpur',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="রংপুর বিভাগ" data-en="Rangpur Div.">রংপুর বিভাগ</span>
+  </button>
+  <button class="route-btn" onclick="switchRoute('sylhet',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+    <span data-bn="সিলেট বিভাগ" data-en="Sylhet Div.">সিলেট বিভাগ</span>
+  </button>
+</div>
+
+<!-- STATS BAR -->
+
+<div class="stats-bar" id="statsBar">
+  <div class="stat-chip"><span class="stat-dot" style="background:#2563EB"></span><span id="stat-morning">সকাল: ০টি</span></div>
+  <div class="stat-chip"><span class="stat-dot" style="background:#FBBF24"></span><span id="stat-noon">দুপুর-বিকেল: ০টি</span></div>
+  <div class="stat-chip"><span class="stat-dot" style="background:#8b5cf6"></span><span id="stat-evening">সন্ধ্যা-রাত: ০টি</span></div>
+</div>
+
+<!-- TAB NAV -->
+
+<nav class="tab-nav" id="dhakaTabNav">
+  <button class="tab-btn active" id="tab-morning" onclick="showTab('morning',this)"><span class="ti">🌅</span><span class="tab-label" data-bn="সকাল" data-en="Morning">সকাল</span></button>
+  <button class="tab-btn" id="tab-noon" onclick="showTab('noon',this)"><span class="ti">☀️</span><span class="tab-label" data-bn="দুপুর-বিকেল" data-en="Noon-Eve">দুপুর-বিকেল</span></button>
+  <button class="tab-btn" id="tab-evening" onclick="showTab('evening',this)"><span class="ti">🌙</span><span class="tab-label" data-bn="সন্ধ্যা-রাত" data-en="Night">সন্ধ্যা-রাত</span></button>
+</nav>
+
+<!-- CONTENT -->
+
+<div class="content">
+  <!-- Dhaka route -->
+  <div id="view-dhaka">
+    <div class="section active" id="morning">
+      <div class="section-head">
+        <div class="section-icon" style="background:#dbeafe"><svg viewBox="0 0 24 24" stroke="#2563EB"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M22 12h-2M12 22v-2M2 12h2"/></svg></div>
+        <h2 data-bn="সকালের বাস" data-en="Morning Buses">সকালের বাস</h2>
+        <span class="count-badge" id="morning-count">০</span>
+      </div>
+      <div class="cards-wrap" id="morning-cards"></div>
+      <div class="no-results" id="morning-noresult"><span class="nr-icon">🔍</span><p data-bn="কোনো বাস পাওয়া যায়নি" data-en="No buses found">কোনো বাস পাওয়া যায়নি</p></div>
+    </div>
+    <div class="section" id="noon">
+      <div class="section-head">
+        <div class="section-icon" style="background:#fef3c7"><svg viewBox="0 0 24 24" stroke="#d97706"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42"/></svg></div>
+        <h2 data-bn="দুপুর-বিকেলের বাস" data-en="Noon-Evening Buses">দুপুর-বিকেলের বাস</h2>
+        <span class="count-badge" id="noon-count">০</span>
+      </div>
+      <div class="cards-wrap" id="noon-cards"></div>
+      <div class="no-results" id="noon-noresult"><span class="nr-icon">🔍</span><p data-bn="কোনো বাস পাওয়া যায়নি" data-en="No buses found">কোনো বাস পাওয়া যায়নি</p></div>
+    </div>
+    <div class="section" id="evening">
+      <div class="section-head">
+        <div class="section-icon" style="background:#ede9fe"><svg viewBox="0 0 24 24" stroke="#8b5cf6"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></div>
+        <h2 data-bn="সন্ধ্যা-রাতের বাস" data-en="Night Buses">সন্ধ্যা-রাতের বাস</h2>
+        <span class="count-badge" id="evening-count">০</span>
+      </div>
+      <div class="cards-wrap" id="evening-cards"></div>
+      <div class="no-results" id="evening-noresult"><span class="nr-icon">🔍</span><p data-bn="কোনো বাস পাওয়া যায়নি" data-en="No buses found">কোনো বাস পাওয়া যায়নি</p></div>
+    </div>
+  </div>
+
+  <!-- Bakshiganj -->
+
+  <div id="view-bakshiganj" style="display:none">
+    <div class="div-section-banner">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <span data-bn="বকশীগঞ্জ → শেরপুর হয়ে → ঢাকা" data-en="Bakshiganj → via Sherpur → Dhaka">বকশীগঞ্জ → শেরপুর হয়ে → ঢাকা</span>
+    </div>
+    <div id="bakshiganj-cards"></div>
+    <div class="no-results" id="bakshiganj-noresult"><span class="nr-icon">🔍</span><p>কোনো বাস পাওয়া যায়নি</p></div>
+  </div>
+
+  <!-- Jhenaigati -->
+
+  <div id="view-jhenaigati" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #14b8a6">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <span data-bn="ঝিনাইগাতী-শ্রীবদী → শেরপুর হয়ে → ঢাকা" data-en="Jhenaigati-Sribodi → via Sherpur → Dhaka">ঝিনাইগাতী-শ্রীবদী → শেরপুর হয়ে → ঢাকা</span>
+    </div>
+    <div id="jhenaigati-cards"></div>
+    <div class="no-results" id="jhenaigati-noresult"><span class="nr-icon">🔍</span><p>কোনো বাস পাওয়া যায়নি</p></div>
+  </div>
+
+  <!-- Division views -->
+
+  <div id="view-chittagong" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #ef4444">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে চট্টগ্রাম বিভাগ" data-en="Sherpur to Chittagong Division">শেরপুর থেকে চট্টগ্রাম বিভাগ</span>
+    </div>
+    <div id="chittagong-cards"></div>
+  </div>
+  <div id="view-khulna" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #0891b2">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে খুলনা বিভাগ" data-en="Sherpur to Khulna Division">শেরপুর থেকে খুলনা বিভাগ</span>
+    </div>
+    <div id="khulna-cards"></div>
+  </div>
+  <div id="view-barisal" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #8b5cf6">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে বরিশাল বিভাগ" data-en="Sherpur to Barisal Division">শেরপুর থেকে বরিশাল বিভাগ</span>
+    </div>
+    <div id="barisal-cards"></div>
+  </div>
+  <div id="view-rajshahi" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #f97316">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে রাজশাহী বিভাগ" data-en="Sherpur to Rajshahi Division">শেরপুর থেকে রাজশাহী বিভাগ</span>
+    </div>
+    <div id="rajshahi-cards"></div>
+  </div>
+  <div id="view-rangpur" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #10b981">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে রংপুর বিভাগ" data-en="Sherpur to Rangpur Division">শেরপুর থেকে রংপুর বিভাগ</span>
+    </div>
+    <div id="rangpur-cards"></div>
+  </div>
+  <div id="view-sylhet" style="display:none">
+    <div class="div-section-banner" style="border-left:4px solid #ec4899">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+      <span data-bn="শেরপুর থেকে সিলেট বিভাগ" data-en="Sherpur to Sylhet Division">শেরপুর থেকে সিলেট বিভাগ</span>
+    </div>
+    <div id="sylhet-cards"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-credit">
+    <span data-bn="শেরপুরের সর্বস্তরের মানুষের জন্য" data-en="For all people of Sherpur">শেরপুরের সর্বস্তরের মানুষের জন্য</span>
+    &nbsp;·&nbsp; Developed by <span>Shahib Hasan</span>
+  </div>
+  <div class="footer-socials">
+    <a class="social-link x-link" href="https://x.com/shahibhasan0?s=21" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      @shahibhasan0
+    </a>
+    <a class="social-link gh-link" href="https://github.com/shahib4asan" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      shahib4asan
+    </a>
+    <a class="social-link fb-link" href="https://facebook.com/shahibhasan0" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.886v2.265h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+      shahibhasan0
+    </a>
+  </div>
+</footer>
+</div>
+
+<script>
+/* ===== DATA ===== */
+const busData = {
+  morning: [
+    {name:"হক এক্সপ্রেস",nameEn:"Haq Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.৫০",timeEn:"3:50",period:"ভোর",periodEn:"Dawn",dest:"শেরপুর",destEn:"Sherpur",phone:"01734-422175"},
+    {name:"জননী প্লাস",nameEn:"Janani Plus",from:"মহাখালী (ভায়া টাঙ্গাইল)",fromEn:"Mohakhali (Via Tangail)",time:"৪.২০",timeEn:"4:20",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01344-030955"},
+    {name:"মোরাদ মহিমা",nameEn:"Morad Mohima",from:"মহাখালী",fromEn:"Mohakhali",time:"৪.৩০",timeEn:"4:30",period:"ভোর",periodEn:"Dawn",dest:"পাইকুড়া",destEn:"Paikura",phone:"01925-131692"},
+    {name:"যমুনা",nameEn:"Jamuna",from:"মহাখালী (ভায়া টাঙ্গাইল)",fromEn:"Mohakhali (Via Tangail)",time:"৪.৪০",timeEn:"4:40",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01911-589725"},
+    {name:"মোজাদ্দেদীয়া",nameEn:"Mojaddedia",from:"মহাখালী",fromEn:"Mohakhali",time:"৪.৪০",timeEn:"4:40",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01733-119609"},
+    {name:"সিমিন",nameEn:"Simin",from:"মহাখালী",fromEn:"Mohakhali",time:"৪.৫০",timeEn:"4:50",period:"ভোর",periodEn:"Dawn",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01903-258282"},
+    {name:"মেঘলা",nameEn:"Meghla",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.০০",timeEn:"5:00",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01924-532686"},
+    {name:"সরকার",nameEn:"Sarkar",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.০০",timeEn:"5:00",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01880-688867"},
+    {name:"যমুনা",nameEn:"Jamuna",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.১০",timeEn:"5:10",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01914-085162"},
+    {name:"জনতা",nameEn:"Jonota",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.১০",timeEn:"5:10",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01349-226986"},
+    {name:"মমতা",nameEn:"Momota",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৩০",timeEn:"5:30",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01966-526070"},
+    {name:"সিয়াম এন্টারপ্রাইজ",nameEn:"Siam Enterprise",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৩০",timeEn:"5:30",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01894-021221"},
+    {name:"মিম",nameEn:"Mim",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৩০",timeEn:"5:30",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01996-948134"},
+    {name:"জননী প্লাস",nameEn:"Janani Plus",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৩০",timeEn:"5:30",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01344-030954"},
+    {name:"সিয়াম",nameEn:"Siam",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৪০",timeEn:"5:40",period:"ভোর",periodEn:"Dawn",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01894-021229"},
+    {name:"সিমিন",nameEn:"Simin",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৪০",timeEn:"5:40",period:"ভোর",periodEn:"Dawn",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01999-397667"},
+    {name:"শিহাব এক্সপ্রেস",nameEn:"Shihab Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৫০",timeEn:"5:50",period:"ভোর",periodEn:"Dawn",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01988-008243"},
+    {name:"নাহিয়ান এক্সপ্রেস",nameEn:"Nahiyan Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৫০",timeEn:"5:50",period:"ভোর",periodEn:"Dawn",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01906-988796"},
+    {name:"শিহাব এক্সপ্রেস ১",nameEn:"Shihab Express 1",from:"দক্ষিণখান",fromEn:"Dakshinkhaan",time:"৬.০০",timeEn:"6:00",period:"সকাল",periodEn:"Morning",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01897-556154"},
+    {name:"মাফি ২",nameEn:"Mafi 2",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.১০",timeEn:"6:10",period:"সকাল",periodEn:"Morning",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01878-975979"},
+    {name:"সিয়াম",nameEn:"Siam",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.২০",timeEn:"6:20",period:"সকাল",periodEn:"Morning",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01894-021229"},
+    {name:"সাদিকা ১",nameEn:"Sadika 1",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.৩০",timeEn:"6:30",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01912-119181"},
+    {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.৩০",timeEn:"6:30",period:"সকাল",periodEn:"Morning",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01032-548790"},
+    {name:"সানন্দবাড়ী লাইন",nameEn:"Sanandabari Line",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.৩০",timeEn:"6:30",period:"সকাল",periodEn:"Morning",dest:"সানন্দবাড়ী",destEn:"Sanandabari",phone:"01928-307793"},
+    {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.০০",timeEn:"7:00",period:"সকাল",periodEn:"Morning",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01995-534170"},
+    {name:"হাজী",nameEn:"Haji",from:"মিরপুর ১০",fromEn:"Mirpur 10",time:"৭.০০",timeEn:"7:00",period:"সকাল",periodEn:"Morning",dest:"নলী",destEn:"Noli",phone:"01915-216152"},
+    {name:"মিনিমুক্তা ২",nameEn:"Minimukta 2",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.১৫",timeEn:"7:15",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01909-911811"},
+    {name:"অবকাশ এক্সপ্রেস",nameEn:"Abakash Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.৩০",timeEn:"7:30",period:"সকাল",periodEn:"Morning",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01998-153756"},
+    {name:"আজমেরী",nameEn:"Ajmeri",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.৩০",timeEn:"7:30",period:"সকাল",periodEn:"Morning",dest:"কর্ণেজোড়া",destEn:"Kornejora",phone:"01989-437695"},
+    {name:"সুপ্রীম নাইটকোচ",nameEn:"Supreme Nightcoach",from:"গুলিস্তান",fromEn:"Gulistan",time:"৭.৩০",timeEn:"7:30",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01995-413541"},
+    {name:"ঝিনাইগাতী ক্ষুদ্র বণিক",nameEn:"Jhenaigati Bonik",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.৫০",timeEn:"7:50",period:"সকাল",periodEn:"Morning",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01908-197895"},
+    {name:"শেরপুর রেড লাইন",nameEn:"Sherpur Red Line",from:"গুলিস্তান",fromEn:"Gulistan",time:"৮.০০",timeEn:"8:00",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01911-691686"},
+    {name:"নাহিদ",nameEn:"Nahid",from:"মহাখালী",fromEn:"Mohakhali",time:"৮.০০",timeEn:"8:00",period:"সকাল",periodEn:"Morning",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01999-960108"},
+    {name:"প্রিয় এক্সপ্রেস",nameEn:"Priyo Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৮.০০",timeEn:"8:00",period:"সকাল",periodEn:"Morning",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01729-363888"},
+    {name:"প্রাইম",nameEn:"Prime",from:"নাবিষ্কো, মহাখালী",fromEn:"Nabisco Mohakhali",time:"৮.৩০",timeEn:"8:30",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01929-553822"},
+    {name:"মিনিমুক্তা-১",nameEn:"Minimukta-1",from:"মহাখালী",fromEn:"Mohakhali",time:"১০.০০",timeEn:"10:00",period:"সকাল",periodEn:"Morning",dest:"শেরপুর",destEn:"Sherpur",phone:"01916-595151"},
+    {name:"এস এ ২",nameEn:"SA 2",from:"মহাখালী",fromEn:"Mohakhali",time:"১১.০০",timeEn:"11:00",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01924-191118"},
+  ],
+  noon: [
+    {name:"শেরপুর ওমেন চেম্বার",nameEn:"Sherpur Women Chamber",from:"গুলিস্তান",fromEn:"Gulistan",time:"১২.০০",timeEn:"12:00",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01300-823615"},
+    {name:"গজনী এক্সপ্রেস",nameEn:"Gajni Express",from:"মহাখালী",fromEn:"Mohakhali",time:"১২.০০",timeEn:"12:00",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01742-224934"},
+    {name:"মুনরাজ ২",nameEn:"Munraj 2",from:"মহাখালী",fromEn:"Mohakhali",time:"১২.২০",timeEn:"12:20",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01955-418142"},
+    {name:"প্রাইম প্লাস",nameEn:"Prime Plus",from:"গুলিস্তান",fromEn:"Gulistan",time:"১২.৩০",timeEn:"12:30",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01315-234841"},
+    {name:"শ্রীবদী বহুমুখী",nameEn:"Sribodi Bohumukhi",from:"মহাখালী",fromEn:"Mohakhali",time:"১২.৩০",timeEn:"12:30",period:"দুপুর",periodEn:"Noon",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01918-148578"},
+    {name:"শেরপুর টেনিস ক্লাব",nameEn:"Sherpur Tennis Club",from:"গুলিস্তান",fromEn:"Gulistan",time:"১.০৫",timeEn:"1:05",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01990-994994"},
+    {name:"এসি সুপার ডিলাক্স",nameEn:"AC Super Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"১.১০",timeEn:"1:10",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01935-621796"},
+    {name:"ঝিনাইগাতী ক্ষুদ্র বণিক সমবায়",nameEn:"Jhenaigati Bonik Somobay",from:"মহাখালী",fromEn:"Mohakhali",time:"২.০০",timeEn:"2:00",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01919-530689"},
+    {name:"শেরপুর চেম্বার ২",nameEn:"Sherpur Chamber 2",from:"গুলিস্তান",fromEn:"Gulistan",time:"২.০০",timeEn:"2:00",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01997-558890"},
+    {name:"এসি ডিলাক্স",nameEn:"AC Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"২.০০",timeEn:"2:00",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01934-190665"},
+    {name:"শাহীমণি",nameEn:"Shahimoni",from:"দক্ষিণখান",fromEn:"Dakshinkhaan",time:"২.১৫",timeEn:"2:15",period:"দুপুর",periodEn:"Noon",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01999-350308"},
+    {name:"মাফি ৪",nameEn:"Mafi 4",from:"মহাখালী",fromEn:"Mohakhali",time:"২.৩০",timeEn:"2:30",period:"দুপুর",periodEn:"Noon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01966-613232"},
+    {name:"প্রিয় এক্সপ্রেস",nameEn:"Priyo Express",from:"মহাখালী",fromEn:"Mohakhali",time:"২.৩০",timeEn:"2:30",period:"দুপুর",periodEn:"Noon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01935-469462"},
+    {name:"সিমিন",nameEn:"Simin",from:"গুলিস্তান",fromEn:"Gulistan",time:"২.৩০",timeEn:"2:30",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01886-190909"},
+    {name:"সানলাইন এসি",nameEn:"Sunline AC",from:"গুলিস্তান",fromEn:"Gulistan",time:"২.৩০",timeEn:"2:30",period:"দুপুর",periodEn:"Noon",dest:"শেরপুর",destEn:"Sherpur",phone:"01941-920042"},
+    {name:"ঝিনাইগাতী ডিলাক্স",nameEn:"Jhenaigati Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"২.৩০",timeEn:"2:30",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01990-411810"},
+    {name:"ঝিনাইগাতী ট্রাভেলস",nameEn:"Jhenaigati Travels",from:"মহাখালী",fromEn:"Mohakhali",time:"২.৪৫",timeEn:"2:45",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01784-969895"},
+    {name:"এলিট এক্সপ্রেস",nameEn:"Elite Express",from:"গুলিস্তান",fromEn:"Gulistan",time:"২.৫০",timeEn:"2:50",period:"দুপুর",periodEn:"Noon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01326-821812"},
+    {name:"মোরাদ মহিমা",nameEn:"Morad Mohima",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.০০",timeEn:"3:00",period:"বিকেল",periodEn:"Afternoon",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01901-416640"},
+    {name:"প্রাইম কোয়ার্টার",nameEn:"Prime Quarter",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.০৫",timeEn:"3:05",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01932-650090"},
+    {name:"শেরপুর চেম্বার ১",nameEn:"Sherpur Chamber 1",from:"গুলিস্তান",fromEn:"Gulistan",time:"৩.১৫",timeEn:"3:15",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01915-814725"},
+    {name:"তাহিয়া",nameEn:"Tahia",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.২০",timeEn:"3:20",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01988-825498"},
+    {name:"ইলাহী ট্রাভেলস",nameEn:"Ilahi Travels",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.২০",timeEn:"3:20",period:"বিকেল",periodEn:"Afternoon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01980-642000"},
+    {name:"ক্রিড়া সংস্থা এসি",nameEn:"Krira Sangsha AC",from:"গুলিস্তান",fromEn:"Gulistan",time:"৩.৩০",timeEn:"3:30",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01313-990129"},
+    {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.৩০",timeEn:"3:30",period:"বিকেল",periodEn:"Afternoon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01922-860099"},
+    {name:"যমুনা ২",nameEn:"Jamuna 2",from:"মহাখালী",fromEn:"Mohakhali",time:"৩.৪০",timeEn:"3:40",period:"বিকেল",periodEn:"Afternoon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01914-085162"},
+    {name:"অপু ট্রাভেলস",nameEn:"Apu Travels",from:"মহাখালী",fromEn:"Mohakhali",time:"৪.০০",timeEn:"4:00",period:"বিকেল",periodEn:"Afternoon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01308-926543"},
+    {name:"কালেক্টর",nameEn:"Collector",from:"গুলিস্তান",fromEn:"Gulistan",time:"৪.০০",timeEn:"4:00",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01729-142831"},
+    {name:"সারাহ-মিন এক্সপ্রেস",nameEn:"Sarah-Min Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৪.০০",timeEn:"4:00",period:"বিকেল",periodEn:"Afternoon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01909-142071"},
+    {name:"শেরপুর রেড লাইন ২",nameEn:"Sherpur Red Line 2",from:"গুলিস্তান",fromEn:"Gulistan",time:"৪.৩০",timeEn:"4:30",period:"বিকেল",periodEn:"Afternoon",dest:"শেরপুর",destEn:"Sherpur",phone:"01841-001919"},
+    {name:"অবকাশ এক্সপ্রেস",nameEn:"Abakash Express",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.০০",timeEn:"5:00",period:"বিকেল",periodEn:"Afternoon",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01934-292956"},
+    {name:"হিমালয় ক্লাসিক",nameEn:"Himaloy Classic",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.০০",timeEn:"5:00",period:"বিকেল",periodEn:"Afternoon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01979-484904"},
+    {name:"জননী প্লাস",nameEn:"Janani Plus",from:"মহাখালী",fromEn:"Mohakhali",time:"৫.৪০",timeEn:"5:40",period:"বিকেল",periodEn:"Afternoon",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01344-030955"},
+  ],
+  evening: [
+    {name:"মাফি ৩",nameEn:"Mafi 3",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.০০",timeEn:"6:00",period:"সন্ধ্যা",periodEn:"Evening",dest:"সানন্দবাড়ী",destEn:"Sanandabari",phone:"01934-123131"},
+    {name:"মাফি ১",nameEn:"Mafi 1",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.১০",timeEn:"6:10",period:"সন্ধ্যা",periodEn:"Evening",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01310-625592"},
+    {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"মহাখালী",fromEn:"Mohakhali",time:"৬.৩০",timeEn:"6:30",period:"সন্ধ্যা",periodEn:"Evening",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01301-590100"},
+    {name:"মাফি ৫",nameEn:"Mafi 5",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.০০",timeEn:"7:00",period:"সন্ধ্যা",periodEn:"Evening",dest:"সানন্দবাড়ী",destEn:"Sanandabari",phone:"01310-625592"},
+    {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"৭.৩০",timeEn:"7:30",period:"সন্ধ্যা",periodEn:"Evening",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01939-195555"},
+    {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"৮.৩০",timeEn:"8:30",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01933-186816"},
+    {name:"নাঈম",nameEn:"Naim",from:"দক্ষিণখান",fromEn:"Dakshinkhaan",time:"৯.২০",timeEn:"9:20",period:"রাত",periodEn:"Night",dest:"বালিজুড়ি",destEn:"Balijuri",phone:"01791-799949"},
+    {name:"টেনটপ",nameEn:"Tentop",from:"দক্ষিণখান",fromEn:"Dakshinkhaan",time:"৯.৩০",timeEn:"9:30",period:"রাত",periodEn:"Night",dest:"বালিজুড়ি",destEn:"Balijuri",phone:"01930-641199"},
+    {name:"জে কে এন্টারপ্রাইজ",nameEn:"JK Enterprise",from:"মহাখালী",fromEn:"Mohakhali",time:"৯.৩০",timeEn:"9:30",period:"রাত",periodEn:"Night",dest:"ভায়াডাঙ্গা",destEn:"Bhayadanga",phone:"01402-206681"},
+    {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"১০.০০",timeEn:"10:00",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01910-615096"},
+    {name:"সিয়াম এন্টারপ্রাইজ",nameEn:"Siam Enterprise",from:"গাজীপুর চৌঃ",fromEn:"Gazipur",time:"১০.৪০",timeEn:"10:40",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01894-021228"},
+    {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"মহাখালী",fromEn:"Mohakhali",time:"১১.০০",timeEn:"11:00",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01819-116909"},
+    {name:"সাদিকা ২",nameEn:"Sadika 2",from:"মহাখালী",fromEn:"Mohakhali",time:"১১.৩০",timeEn:"11:30",period:"রাত",periodEn:"Night",dest:"শেরপুর",destEn:"Sherpur",phone:"01936-990161"},
+    {name:"জাবির",nameEn:"Jabir",from:"মহাখালী",fromEn:"Mohakhali",time:"১১.৪৫",timeEn:"11:45",period:"রাত",periodEn:"Night",dest:"কর্ণেজোড়া",destEn:"Kornejora",phone:"01908-892500"},
+    {name:"যমুনা",nameEn:"Jamuna",from:"মহাখালী",fromEn:"Mohakhali",time:"১২.১০",timeEn:"12:10",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01911-589718"},
+    {name:"মা মনি",nameEn:"Ma Moni",from:"মহাখালী",fromEn:"Mohakhali",time:"১২.৩০",timeEn:"12:30",period:"রাত",periodEn:"Night",dest:"বকশীগঞ্জ",destEn:"Bakshiganj",phone:"01912-350173"},
+    {name:"তাকিফ",nameEn:"Takif",from:"মহাখালী",fromEn:"Mohakhali",time:"১.০০",timeEn:"1:00",period:"রাত",periodEn:"Night",dest:"ঝিনাইগাতী",destEn:"Jhenaigati",phone:"01998-522780"},
+  ]
+};
+
+const divisionRoutes = {
+  chittagong: [
+    {name:"প্রতিনিধি",nameEn:"Pratinidhi",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৭.৩০",timeFromEn:"7:30 PM",dest:"অলংকার, চট্টগ্রাম",destEn:"Alangkar, Chittagong",timeTo:"সন্ধ্যা ৭.৩০",timeToEn:"7:30 PM",phones:["01914-822493","01955-468499","01726-568991","01728-349039"]},
+    {name:"শামীম এন্টারপ্রাইজ",nameEn:"Shamim Enterprise",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৭.০০",timeFromEn:"7:00 PM",dest:"অলংকার, চট্টগ্রাম",destEn:"Alangkar, Chittagong",timeTo:"সন্ধ্যা ৭.৩০",timeToEn:"7:30 PM",phones:["01891-659349","01958-005162"]},
+    {name:"আয়েশা পরিবহন",nameEn:"Ayesha Paribahan",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৬.৪৫",timeFromEn:"6:45 PM",dest:"অলংকার, চট্টগ্রাম",destEn:"Alangkar, Chittagong",timeTo:"সন্ধ্যা ৬.৪৫",timeToEn:"6:45 PM",phones:["01311-800280","01311-800281","01820-096092"]},
+    {name:"চট্টগ্রাম এক্সপ্রেস",nameEn:"Chittagong Express",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৬.৩০",timeFromEn:"6:30 PM",dest:"অলংকার, চট্টগ্রাম",destEn:"Alangkar, Chittagong",timeTo:"সন্ধ্যা ৬.৩০",timeToEn:"6:30 PM",phones:["01321-686360","01321-686361","01321-686367"]},
+    {name:"নূর ট্রাভেলস",nameEn:"Noor Travels",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"সন্ধ্যা ৭.১৫",timeFromEn:"7:15 PM",dest:"অলংকার, চট্টগ্রাম",destEn:"Alangkar, Chittagong",timeTo:"সন্ধ্যা ৬.৩০",timeToEn:"6:30 PM",phones:["01336-209489","01829-553823","01828-518858"]},
+    {name:"নোয়াখালী এক্সপ্রেস",nameEn:"Noakhali Express",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৭.০০",timeFromEn:"7:00 PM",dest:"নোয়াখালী",destEn:"Noakhali",timeTo:"সন্ধ্যা ৭.০০",timeToEn:"7:00 PM",phones:["01905-889585","01905-889589","01905-889529"]},
+    {name:"প্রতিনিধি এসি (কক্সবাজার)",nameEn:"Pratinidhi AC (Cox's Bazar)",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"বিকাল ৫.৩০",timeFromEn:"5:30 PM",dest:"কক্সবাজার",destEn:"Cox's Bazar",timeTo:"বিকাল ৪ টায়",timeToEn:"4:00 PM",phones:["01926-568991","01781-655106","01781-655107","01781-655102"]},
+    {name:"শামীম এন্টারপ্রাইজ (কক্সবাজার)",nameEn:"Shamim Enterprise (Cox's Bazar)",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৫.০০",timeFromEn:"5:00 PM",dest:"কক্সবাজার",destEn:"Cox's Bazar",timeTo:"সন্ধ্যা ৬.০০",timeToEn:"6:00 PM",phones:["01891-659349","01901-655098"]},
+    {name:"মোমেনশাহী এক্সপ্রেস এসি (কক্সবাজার)",nameEn:"Momenshahi Express AC",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৬.০০",timeFromEn:"6:00 PM",dest:"কক্সবাজার",destEn:"Cox's Bazar",timeTo:"বিকাল ৫.৩০",timeToEn:"5:30 PM",phones:["01336-323770","01336-323768"]},
+  ],
+  khulna: [
+    {name:"নিউ এসবি সুপার ডিলাক্স (খুলনা)",nameEn:"New SB Super Deluxe (Khulna)",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"সন্ধ্যা ৭.০০",timeFromEn:"7:00 PM",dest:"রূপসাঘাট, খুলনা",destEn:"Rupsa Ghat, Khulna",timeTo:"সন্ধ্যা ৭.০০",timeToEn:"7:00 PM",phones:["01901-643333","01901-643300","01331-023102"]},
+    {name:"হিমেল সিমান্ত (সাতক্ষীরা)",nameEn:"Himel Simanto (Satkhira)",from:"নিউমার্কেট, শেরপুর",fromEn:"New Market, Sherpur",timeFrom:"সন্ধ্যা ৭.১৫",timeFromEn:"7:15 PM",dest:"শ্যামনগর, সাতক্ষীরা",destEn:"Shyamnagar, Satkhira",timeTo:"বিকাল ৫.০০",timeToEn:"5:00 PM",phones:["01320-511879","01320-511898","01729-892294","01989-822380"]},
+    {name:"হিমেল সিমান্ত (খুলনা)",nameEn:"Himel Simanto (Khulna)",from:"নিউমার্কেট, শেরপুর",fromEn:"New Market, Sherpur",timeFrom:"সকাল ৭.৩০",timeFromEn:"7:30 AM",dest:"রূপসাঘাট, খুলনা",destEn:"Rupsa Ghat, Khulna",timeTo:"সন্ধ্যা ৭.৩০",timeToEn:"7:30 PM",phones:["01960-886661","01960-886662","01811-469816"]},
+    {name:"হিমেল সিমান্ত এসি (বেনাপোল)",nameEn:"Himel Simanto AC (Benapol)",from:"নিউমার্কেট, শেরপুর",fromEn:"New Market, Sherpur",timeFrom:"রাত ৮.৩০",timeFromEn:"8:30 PM",dest:"বেনাপোল",destEn:"Benapol",timeTo:"সন্ধ্যা ৭ টায়",timeToEn:"7:00 PM",phones:["01730-953280","01730-953281","01960-886663"]},
+  ],
+  barisal: [
+    {name:"হিমেল সিমান্ত",nameEn:"Himel Simanto",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৭.০০",timeFromEn:"7:00 PM",dest:"কুয়াকাটা, বরিশাল",destEn:"Kuakata, Barisal",timeTo:"সন্ধ্যা ৬.০০",timeToEn:"6:00 PM",phones:["01889-990048","01889-990089","01914-760128","01799-845130"]},
+    {name:"সিমান্ত ট্রাভেলস",nameEn:"Simanto Travels",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সন্ধ্যা ৬.৩০",timeFromEn:"6:30 PM",dest:"কুয়াকাটা, বরিশাল",destEn:"Kuakata, Barisal",timeTo:"বিকাল ৫.৩০",timeToEn:"5:30 PM",phones:["01345-855275","01345-855276","01345-855273","01345-855274"]},
+  ],
+  rajshahi: [
+    {name:"এস কে জননী (রাজশাহী)",nameEn:"SK Janani (Rajshahi)",from:"নিউ মার্কেট, শেরপুর",fromEn:"New Market, Sherpur",timeFrom:"সকাল ৯",timeFromEn:"9:00 AM",dest:"চাপাই নবাবগঞ্জ",destEn:"Chapai Nawabganj",timeTo:"সকাল ১০.০০",timeToEn:"10:00 AM",phones:["01999-966982","01999-966983","01729-592294","01706-293018"]},
+    {name:"মাহী আজমেরী পরিবহন",nameEn:"Mahi Ajmeri Paribahan",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"রাত ৯.০০",timeFromEn:"9:00 PM",dest:"চাপাই নবাবগঞ্জ",destEn:"Chapai Nawabganj",timeTo:"রাত ৮.৩০",timeToEn:"8:30 PM",phones:["01324-992592","01324-992594","01324-992597","01324-992795"]},
+    {name:"সীমান্ত এক্সপ্রেস - বগুড়া (সকাল)",nameEn:"Simanto Express - Bogura (AM)",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সকাল ৮.৩০",timeFromEn:"8:30 AM",dest:"বগুড়া",destEn:"Bogura",timeTo:"দুপুর ২.৩০",timeToEn:"2:30 PM",phones:["01914-780133","01726-568991","01798-303090"]},
+    {name:"সীমান্ত এক্সপ্রেস - বগুড়া (দুপুর)",nameEn:"Simanto Express - Bogura (PM)",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"দুপুর ২.৩০",timeFromEn:"2:30 PM",dest:"বগুড়া",destEn:"Bogura",timeTo:"সকাল ৭.৩০",timeToEn:"7:30 AM",phones:["01944-282772","01726-568991","01798-303090"]},
+  ],
+  rangpur: [
+    {name:"সীমান্ত এক্সপ্রেস (রংপুর)",nameEn:"Simanto Express (Rangpur)",from:"পোষ্ট অফিসের সামনে, শেরপুর",fromEn:"Post Office, Sherpur",timeFrom:"সকাল ৭.০০",timeFromEn:"7:00 AM",dest:"রংপুর",destEn:"Rangpur",timeTo:"দুপুর ৩.০০",timeToEn:"3:00 PM",phones:["01934-628901","01726-568991","01934-628901"]},
+  ],
+  sylhet: [
+    {name:"প্রাইম পরিবহন",nameEn:"Prime Paribahan",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"সন্ধ্যা ৭.৩০",timeFromEn:"7:30 PM",dest:"সিলেট",destEn:"Sylhet",timeTo:"রাত ৯.০০",timeToEn:"9:00 PM",phones:["01934-682803","01934-682808","01934-682804","01934-682899"]},
+    {name:"জালালাবাদ পরিবহন",nameEn:"Jalalabad Paribahan",from:"নবীনগর স্ট্যান্ড, শেরপুর",fromEn:"Nabinagar Stand, Sherpur",timeFrom:"সন্ধ্যা ৬.০০",timeFromEn:"6:00 PM",dest:"সিলেট",destEn:"Sylhet",timeTo:"রাত ৮.০০",timeToEn:"8:00 PM",phones:["01942-591730","01799-633040","01911-530126","01918-638037"]},
+    {name:"আল জান্নাহ এক্সপ্রেস",nameEn:"Al Jannah Express",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"রাত ৮.৩০",timeFromEn:"8:30 PM",dest:"সিলেট",destEn:"Sylhet",timeTo:"রাত ৮.১৫",timeToEn:"8:15 PM",phones:["01349-228205","01349-228206","01349-228203","01349-228207"]},
+    {name:"শাহী ভ্রমণ",nameEn:"Shahi Vromon",from:"থানামোড়, শেরপুর",fromEn:"Thanamor, Sherpur",timeFrom:"রাত ৮.৩০",timeFromEn:"8:30 PM",dest:"সিলেট",destEn:"Sylhet",timeTo:"সন্ধ্যা ৭.০০",timeToEn:"7:00 PM",phones:["01901-355885","01901-355886","01901-355889"]},
+  ]
+};
+
+const bakshiganjRoutes = [
+  {name:"যমুনা",nameEn:"Jamuna",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৪.৪০",timeEn:"4:40",period:"ভোর",periodEn:"Dawn",dest:"ঢাকা",destEn:"Dhaka",phones:["01896-705391","01914-085163"]},
+  {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৫.৩০",timeEn:"5:30",period:"ভোর",periodEn:"Dawn",dest:"ঢাকা",destEn:"Dhaka",phones:["01722-860097","01722-722865"]},
+  {name:"প্রিয় এক্সপ্রেস",nameEn:"Priyo Express",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৬.০০",timeEn:"6:00",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01935-865762"]},
+  {name:"হিমালয় ক্লাসিক",nameEn:"Himaloy Classic",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৬.৪০",timeEn:"6:40",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01979-884904"]},
+  {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৭.৩০",timeEn:"7:30",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01739-195555"]},
+  {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৩০",timeEn:"8:30",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01733-186816"]},
+  {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৩০",timeEn:"8:30",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01301-590100","01722-722865"]},
+  {name:"সিয়াম এন্টারপ্রাইজ",nameEn:"Siam Enterprise",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৪৫",timeEn:"8:45",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01894-021228"]},
+  {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৯.০০",timeEn:"9:00",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01910-615096"]},
+  {name:"মাফি ১",nameEn:"Mafi 1",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৯.০০",timeEn:"9:00",period:"সকাল",periodEn:"Morning",dest:"ঢাকা",destEn:"Dhaka",phones:["01310-625592"]},
+  {name:"হাজী ট্রাভেলস",nameEn:"Haji Travels",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৬.৩০",timeEn:"6:30",period:"বিকেল",periodEn:"Afternoon",dest:"ঢাকা",destEn:"Dhaka",phones:["01768-020633","01911-046883"]},
+  {name:"ক্রাউন ডিলাক্স",nameEn:"Crown Deluxe",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৩০",timeEn:"8:30",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01995-434397"]},
+  {name:"জননী এন্টারপ্রাইজ",nameEn:"Janani Enterprise",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৪৫",timeEn:"8:45",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01312-438793","01722-722865"]},
+  {name:"সিয়াম এন্টারপ্রাইজ",nameEn:"Siam Enterprise",from:"সানন্দবাড়ী",fromEn:"Sanandabari",time:"৮.৪৫",timeEn:"8:45",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01894-021221"]},
+  {name:"মাফি ২",nameEn:"Mafi 2",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৯.০০",timeEn:"9:00",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01918-979767"]},
+  {name:"মেঘলা",nameEn:"Meghla",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"৯.২০",timeEn:"9:20",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01924-532686","01316-153081"]},
+  {name:"যমুনা",nameEn:"Jamuna",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"১০.০০",timeEn:"10:00",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01914-085162","01914-085163"]},
+  {name:"নাহিয়ান এক্সপ্রেস",nameEn:"Nahiyan Express",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"১০.০০",timeEn:"10:00",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01706-188796","01706-800856"]},
+  {name:"প্রিয় এক্সপ্রেস",nameEn:"Priyo Express",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"১০.৩০",timeEn:"10:30",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01729-363888"]},
+  {name:"নাহিদ",nameEn:"Nahid",from:"বকশীগঞ্জ",fromEn:"Bakshiganj",time:"১০.৩০",timeEn:"10:30",period:"রাত",periodEn:"Night",dest:"ঢাকা",destEn:"Dhaka",phones:["01779-760908"]},
+];
+
+const jhenaigatiRoutes = [
+  {name:"সিমিন",nameEn:"Simin",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"ভোর ০৪.০০",timeEn:"4:00 AM",period:"ভোর",periodEn:"Dawn",dest:"গুলিস্তান, ঢাকা",destEn:"Gulistan, Dhaka",timeDhaka:"দুপুর ০২.৩০",timeDhakaEn:"2:30 PM",phones:["01896-190909","01730-589081"]},
+  {name:"গজনী এক্সপ্রেস",nameEn:"Gajni Express",from:"ঝিনাইগাতী",fromEn:"Jhenaigati",time:"ভোর ০৫.৩০",timeEn:"5:30 AM",period:"ভোর",periodEn:"Dawn",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ১২.০০",timeDhakaEn:"12:00 PM",phones:["01942-224975","01765-607793"]},
+  {name:"ঝিনাইগাতী ডিলাক্স",nameEn:"Jhenaigati Deluxe",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৬.৩০",timeEn:"6:30 AM",period:"সকাল",periodEn:"Morning",dest:"বঙ্গবাজার, ঢাকা",destEn:"Bongobazar, Dhaka",timeDhaka:"দুপুর ০২.৩০",timeDhakaEn:"2:30 PM",phones:["01770-811810","01981-728173"]},
+  {name:"শাহমণি",nameEn:"Shahimoni",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"সকাল ০৬.৪০",timeEn:"6:40 AM",period:"সকাল",periodEn:"Morning",dest:"দক্ষিণখান, ঢাকা",destEn:"Dakshinkhaan, Dhaka",timeDhaka:"দুপুর ০২.১৫",timeDhakaEn:"2:15 PM",phones:["01899-363408"]},
+  {name:"ঝিনাইগাতী ক্ষুদ্রবণিক সমবায়",nameEn:"Jhenaigati Bonik Somobay",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৭.০০",timeEn:"7:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ০২.০০",timeDhakaEn:"2:00 PM",phones:["01919-530687","01911-333913"]},
+  {name:"শ্রীবদী বহুমুখী শিল্প ও বণিক সমিতি",nameEn:"Sribodi Bohumukhi Shilpo",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"সকাল ০৭.০০",timeEn:"7:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ০১.০০",timeDhakaEn:"1:00 PM",phones:["01918-148578"]},
+  {name:"নাঈম",nameEn:"Naim",from:"বালিজুড়ি",fromEn:"Balijuri",time:"সকাল ০৭.০০",timeEn:"7:00 AM",period:"সকাল",periodEn:"Morning",dest:"দক্ষিণখান, ঢাকা",destEn:"Dakshinkhaan, Dhaka",timeDhaka:"রাত ০৯.২০",timeDhakaEn:"9:20 PM",phones:["01791-799747"]},
+  {name:"মোরাদ মহিমা",nameEn:"Morad Mohima",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"সকাল ০৭.১০",timeEn:"7:10 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ০৩.০০",timeDhakaEn:"3:00 PM",phones:["01901-416640"]},
+  {name:"ঝিনাইগাতী এক্সপ্রেস",nameEn:"Jhenaigati Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৭.৩০",timeEn:"7:30 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ১.৪৫",timeDhakaEn:"1:45 PM",phones:["01997-239823","01946-200280"]},
+  {name:"অপু ট্রেভেলস",nameEn:"Apu Travels",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৮.০০",timeEn:"8:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"বিকেল ০৪.০০",timeDhakaEn:"4:00 PM",phones:["01308-926543"]},
+  {name:"জনতা পরিবহন",nameEn:"Jonota Paribahan",from:"তিনানী",fromEn:"Tinani",time:"সকাল ০৮.০০",timeEn:"8:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"দুপুর ০২.০০",timeDhakaEn:"2:00 PM",phones:["01325-542294","01814-841617"]},
+  {name:"সারাহ-মিন এক্সপ্রেস",nameEn:"Sarah-Min Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৮.১০",timeEn:"8:10 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"বিকেল ০৪.০০",timeDhakaEn:"4:00 PM",phones:["01709-142071","01709-142073"]},
+  {name:"অবকাশ এক্সপ্রেস",nameEn:"Abakash Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ০৯.০০",timeEn:"9:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"বিকেল ০৫.০০",timeDhakaEn:"5:00 PM",phones:["01934-272896","01915-260194"]},
+  {name:"জাবির",nameEn:"Jabir",from:"কর্ণেজোড়া",fromEn:"Kornejora",time:"সকাল ১০.০০",timeEn:"10:00 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"রাত ১১.৪৫",timeDhakaEn:"11:45 PM",phones:["01904-992500"]},
+  {name:"ঝিনাইগাতী এক্সপ্রেস",nameEn:"Jhenaigati Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"সকাল ১০.১০",timeEn:"10:10 AM",period:"সকাল",periodEn:"Morning",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"রাত ১.৩০",timeDhakaEn:"1:30 AM",phones:["01946-200301","01946-200280"]},
+  {name:"তাকিফ",nameEn:"Takif",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"দুপুর ১২.৩০",timeEn:"12:30 PM",period:"দুপুর",periodEn:"Noon",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"রাত ১.০০",timeDhakaEn:"1:00 AM",phones:["01998-522780"]},
+  {name:"সিমিন",nameEn:"Simin",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"দুপুর ০২.০০",timeEn:"2:00 PM",period:"দুপুর",periodEn:"Noon",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.৫০",timeDhakaEn:"5:50 AM",phones:["01997-376837","01730-589081"]},
+  {name:"সরকার",nameEn:"Sarkar",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"রাত ০৯.০০",timeEn:"9:00 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.২০",timeDhakaEn:"5:20 AM",phones:["01840-688869","01956-780249"]},
+  {name:"শিহাব",nameEn:"Shihab",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"রাত ০৯.০০",timeEn:"9:00 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.৫০",timeDhakaEn:"5:50 AM",phones:["01988-008283","01979-153262"]},
+  {name:"মোরাদ মহিমা",nameEn:"Morad Mohima",from:"পাইকুড়া",fromEn:"Paikura",time:"রাত ০৯.০০",timeEn:"9:00 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৪.৩০",timeDhakaEn:"4:30 AM",phones:["01725-131692","01725-739728"]},
+  {name:"মোজাদ্দেদীয়া",nameEn:"Mojaddedia",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"রাত ০৯.২০",timeEn:"9:20 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.০০",timeDhakaEn:"5:00 AM",phones:["01933-119609","01997-981308"]},
+  {name:"মিম",nameEn:"Mim",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"রাত ০৯.২০",timeEn:"9:20 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.৩০",timeDhakaEn:"5:30 AM",phones:["01996-981308"]},
+  {name:"মমতা",nameEn:"Momota",from:"ভায়াডাঙ্গা",fromEn:"Bhayadanga",time:"রাত ০৯.৩০",timeEn:"9:30 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.০০",timeDhakaEn:"5:00 AM",phones:["01966-526070"]},
+  {name:"অবকাশ এক্সপ্রেস",nameEn:"Abakash Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"রাত ১০.৩০",timeEn:"10:30 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"সকাল ০৭.৩০",timeDhakaEn:"7:30 AM",phones:["01998-153976","01915-260194"]},
+  {name:"সিয়াম",nameEn:"Siam",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"রাত ১০.৩০",timeEn:"10:30 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"সকাল ০৬.২০",timeDhakaEn:"6:20 AM",phones:["01894-021229"]},
+  {name:"এস এম এক্সপ্রেস",nameEn:"SM Express",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"রাত ১০.৩০",timeEn:"10:30 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"সকাল ০৬.০০",timeDhakaEn:"6:00 AM",phones:["01944-054560","01709-142073"]},
+  {name:"সিমিন",nameEn:"Simin",from:"ঝিনাইগাতি",fromEn:"Jhenaigati",time:"রাত ১১.০০",timeEn:"11:00 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৫.৫০",timeDhakaEn:"5:50 AM",phones:["01903-258282","01730-589081"]},
+  {name:"নূরজাহান",nameEn:"Nurjahan",from:"তিনানী",fromEn:"Tinani",time:"রাত ১১.০০",timeEn:"11:00 PM",period:"রাত",periodEn:"Night",dest:"মহাখালী, ঢাকা",destEn:"Mohakhali, Dhaka",timeDhaka:"ভোর ০৬.৩০",timeDhakaEn:"6:30 AM",phones:["01325-542229","01325-542295"]},
+];
+
+const locations = [
+  {bn:"মহাখালী",en:"Mohakhali",aliases:["mohakhali","মহাখালি","মহাখালী","mohakhally"]},
+  {bn:"গুলিস্তান",en:"Gulistan",aliases:["gulistan","গুলিস্তান"]},
+  {bn:"দক্ষিণখান",en:"Dakshinkhaan",aliases:["dakshinkhaan","দক্ষিণখান","dakshinkhan"]},
+  {bn:"মিরপুর",en:"Mirpur",aliases:["mirpur","মিরপুর"]},
+  {bn:"গাজীপুর",en:"Gazipur",aliases:["gazipur","গাজীপুর"]},
+  {bn:"শেরপুর",en:"Sherpur",aliases:["sherpur","শেরপুর","sherpoor"]},
+  {bn:"বকশীগঞ্জ",en:"Bakshiganj",aliases:["bakshiganj","বকশীগঞ্জ","baksiganj"]},
+  {bn:"ঝিনাইগাতী",en:"Jhenaigati",aliases:["jhenaigati","jhinaigati","ঝিনাইগাতী","ঝিনাইগাতি","jhinaigoti","jhenaigoti","jhinaigathi"]},
+  {bn:"ভায়াডাঙ্গা",en:"Bhayadanga",aliases:["bhayadanga","ভায়াডাঙ্গা","bhaya"]},
+  {bn:"সানন্দবাড়ী",en:"Sanandabari",aliases:["sanandabari","সানন্দবাড়ী","anandabari"]},
+  {bn:"কর্ণেজোড়া",en:"Kornejora",aliases:["kornejora","কর্ণেজোড়া"]},
+  {bn:"পাইকুড়া",en:"Paikura",aliases:["paikura","পাইকুড়া"]},
+  {bn:"নলী",en:"Noli",aliases:["noli","নলী"]},
+  {bn:"বালিজুড়ি",en:"Balijuri",aliases:["balijuri","বালিজুড়ি"]},
+  {bn:"টাঙ্গাইল",en:"Tangail",aliases:["tangail","টাঙ্গাইল"]},
+  {bn:"ঢাকা",en:"Dhaka",aliases:["dhaka","ঢাকা","daka"]},
+  {bn:"চট্টগ্রাম",en:"Chittagong",aliases:["chittagong","চট্টগ্রাম","chattagram","ctg"]},
+  {bn:"খুলনা",en:"Khulna",aliases:["khulna","খুলনা"]},
+  {bn:"বরিশাল",en:"Barisal",aliases:["barisal","বরিশাল","barishal"]},
+  {bn:"রাজশাহী",en:"Rajshahi",aliases:["rajshahi","রাজশাহী"]},
+  {bn:"রংপুর",en:"Rangpur",aliases:["rangpur","রংপুর"]},
+  {bn:"সিলেট",en:"Sylhet",aliases:["sylhet","সিলেট"]},
+  {bn:"বগুড়া",en:"Bogura",aliases:["bogura","বগুড়া","bogra"]},
+  {bn:"নোয়াখালী",en:"Noakhali",aliases:["noakhali","নোয়াখালী"]},
+  {bn:"কক্সবাজার",en:"Cox's Bazar",aliases:["cox","কক্সবাজার","coxbazar"]},
+  {bn:"থানামোড়",en:"Thanamor",aliases:["thanamor","থানামোড়","thana"]},
+  {bn:"নিউমার্কেট",en:"New Market",aliases:["newmarket","নিউমার্কেট"]},
+  {bn:"তিনানী",en:"Tinani",aliases:["tinani","তিনানী"]},
+];
+
+/* ===== APP STATE ===== */
+let lang = 'bn';
+let activeTimeFilter = 'all';
+let activeRoute = 'dhaka';
+let fromValue = '';
+let toValue = '';
+
+/* ===== SVGs ===== */
+const callSvg = `<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.81a16 16 0 0 0 6.13 6.13l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+const pinSvg  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+const timeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>`;
+
+/* ===== UTILITIES ===== */
+function normBn(s) { return s.replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d).toString()); }
+function norm(s) { return normBn(s.toLowerCase().trim()); }
+function hl(text, q) {
+  if (!q) return text;
+  try {
+    const e = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(new RegExp(`(${e})`, 'gi'), '<mark>$1</mark>');
+  } catch { return text; }
+}
+function phoneDigits(p) { return p.replace(/[^0-9]/g, ''); }
+
+/* ===== SUGGESTIONS ===== */
+function getSuggestions(query) {
+  const q = norm(query);
+  if (!q) return [];
+  return locations.filter(loc => {
+    return [loc.bn, loc.en, ...loc.aliases].some(a => norm(a).includes(q));
+  }).slice(0, 6);
+}
+function renderSuggestions(listId, items, field) {
+  const el = document.getElementById(listId);
+  if (!items.length) { el.classList.remove('open'); el.innerHTML = ''; return; }
+  el.innerHTML = items.map(loc => {
+    const label = lang === 'bn' ? loc.bn : loc.en;
+    return `<div class="sug-item" onmousedown="event.preventDefault()" onclick="selectLocation('${field}','${loc.bn}','${loc.en}')">${pinSvg}<span>${label}</span></div>`;
+  }).join('');
+  el.classList.add('open');
+}
+
+/* ===== INPUT HANDLERS ===== */
+function onFTInput(field, val) {
+  if (field === 'from') fromValue = val; else toValue = val;
+  renderSuggestions(field === 'from' ? 'fromSug' : 'toSug', getSuggestions(val), field);
+}
+function onFTFocus(field) {
+  const inp = document.getElementById(field === 'from' ? 'fromInput' : 'toInput');
+  onFTInput(field, inp.value);
+}
+function onFTBlur(field) {
+  setTimeout(() => {
+    const el = document.getElementById(field === 'from' ? 'fromSug' : 'toSug');
+    if (el) el.classList.remove('open');
+  }, 200);
+}
+function selectLocation(field, bn, en) {
+  const label = lang === 'bn' ? bn : en;
+  const inputId = field === 'from' ? 'fromInput' : 'toInput';
+  document.getElementById(inputId).value = label;
+  const sugId = field === 'from' ? 'fromSug' : 'toSug';
+  document.getElementById(sugId).classList.remove('open');
+  if (field === 'from') fromValue = label; else toValue = label;
+}
+function swapFromTo() {
+  const fi = document.getElementById('fromInput');
+  const ti = document.getElementById('toInput');
+  [fi.value, ti.value] = [ti.value, fi.value];
+  [fromValue, toValue] = [toValue, fromValue];
+}
+
+/* ===== ROUTE SWITCHER ===== */
+function switchRoute(route, btn) {
+  activeRoute = route;
+  document.querySelectorAll('.route-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const allViews = ['dhaka','bakshiganj','jhenaigati','chittagong','khulna','barisal','rajshahi','rangpur','sylhet'];
+  allViews.forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.style.display = v === route ? '' : 'none';
+  });
+
+  const isDhaka = route === 'dhaka';
+  document.getElementById('dhakaTabNav').style.display = isDhaka ? '' : 'none';
+  document.getElementById('statsBar').style.display    = isDhaka ? '' : 'none';
+
+  if (route === 'dhaka') renderAll();
+  else if (route === 'bakshiganj') renderSimpleList('bakshiganj-cards', bakshiganjRoutes, 'bakshiganj');
+  else if (route === 'jhenaigati') renderJhenaigatiList();
+  else renderDivisionCards(route);
+
+  updateLangTexts();
+}
+
+/* ===== TIME FILTER ===== */
+function selectTime(chip, time) {
+  document.querySelectorAll('.time-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  activeTimeFilter = time;
+  const target = time === 'all' ? 'morning' : time;
+  showTab(target, document.getElementById('tab-' + target));
+}
+
+/* ===== TABS ===== */
+function showTab(tab, btn) {
+  document.querySelectorAll('#view-dhaka .section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const secEl = document.getElementById(tab);
+  if (secEl) secEl.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ===== SEARCH SCORING ===== */
+function scoreCard(bus, fromQ, toQ) {
+  const fq = norm(fromQ), tq = norm(toQ);
+  if (!fq && !tq) return 1;
+  const busFrom = norm((bus.from || '') + ' ' + (bus.fromEn || ''));
+  const busDest = norm((bus.dest || '') + ' ' + (bus.destEn || ''));
+  const busAll  = norm([bus.name,bus.nameEn,bus.from,bus.fromEn,bus.dest,bus.destEn,bus.phone].filter(Boolean).join(' '));
+  let score = 0;
+  if (fq) {
+    if (busFrom.includes(fq)) score += 2;
+    else if (busAll.includes(fq)) score += 1;
+    else return 0;
+  }
+  if (tq) {
+    if (busDest.includes(tq)) score += 2;
+    else if (busAll.includes(tq)) score += 0.5;
+    else return 0;
+  }
+  return score;
+}
+
+function doSearch() {
+  fromValue = document.getElementById('fromInput').value.trim();
+  toValue   = document.getElementById('toInput').value.trim();
+  if (activeRoute === 'dhaka') {
+    renderAll();
+    for (const sec of ['morning','noon','evening']) {
+      if (busData[sec].some(b => scoreCard(b, fromValue, toValue) > 0)) {
+        showTab(sec, document.getElementById('tab-' + sec));
+        break;
+      }
+    }
+  } else if (activeRoute === 'bakshiganj') {
+    renderSimpleList('bakshiganj-cards', bakshiganjRoutes, 'bakshiganj');
+  } else if (activeRoute === 'jhenaigati') {
+    renderJhenaigatiList();
+  }
+}
+
+/* ===== RENDER: DHAKA ===== */
+function renderAll() {
+  const isEn = lang === 'en';
+  const fv = fromValue.trim(), tv = toValue.trim();
+  const filter = activeTimeFilter === 'all' ? null : activeTimeFilter;
+
+  ['morning','noon','evening'].forEach(sec => {
+    const wrap    = document.getElementById(sec + '-cards');
+    const noRes   = document.getElementById(sec + '-noresult');
+    const countEl = document.getElementById(sec + '-count');
+    if (!wrap) return;
+
+    if (filter && filter !== sec) {
+      wrap.innerHTML = ''; countEl.textContent = '০'; noRes.style.display = 'none'; return;
+    }
+
+    const scored = busData[sec]
+      .map((b, i) => ({ b, i, score: scoreCard(b, fv, tv) }))
+      .filter(x => x.score > 0)
+      .sort((a, z) => z.score - a.score || a.i - z.i);
+
+    const count = scored.length;
+    countEl.textContent = count;
+    if (!count) { wrap.innerHTML = ''; noRes.style.display = 'block'; return; }
+    noRes.style.display = 'none';
+
+    const cls     = sec === 'noon' ? 'card noon' : sec === 'evening' ? 'card evening' : 'card';
+    const callTxt = isEn ? 'CALL' : 'কল';
+
+    wrap.innerHTML = scored.map(({ b, i }, rank) => {
+      const name   = hl(isEn ? b.nameEn : b.name, fv || tv);
+      const dest   = hl(isEn ? b.destEn : b.dest, tv);
+      const from   = hl(isEn ? b.fromEn : b.from, fv);
+      const time   = isEn ? b.timeEn   : b.time;
+      const period = isEn ? b.periodEn : b.period;
+      const digits = phoneDigits(b.phone || '');
+      return `<div class="${cls}" style="animation-delay:${rank * .04}s">
+        <div class="card-left">
+          <div class="serial">#${String(i+1).padStart(2,'0')}</div>
+          <div class="bus-name">${name}</div>
+          <div class="card-meta">
+            <span class="meta-chip time">${timeSvg}${time} (${period})</span>
+            <span class="meta-chip dest">${pinSvg}${dest}</span>
+            <span class="meta-chip place">${pinSvg}${from}</span>
+          </div>
+          <div class="phone-num">${b.phone || ''}</div>
+        </div>
+        <a class="call-btn" href="tel:${digits}" aria-label="Call ${b.phone}">
+          ${callSvg}<span class="call-label">${callTxt}</span>
+        </a>
+      </div>`;
+    }).join('');
+  });
+
+  // Update stats
+  const bn = lang === 'bn';
+  const mc = document.getElementById('morning-count').textContent;
+  const nc = document.getElementById('noon-count').textContent;
+  const ec = document.getElementById('evening-count').textContent;
+  document.getElementById('stat-morning').textContent = bn ? `সকাল: ${mc}টি` : `Morning: ${mc}`;
+  document.getElementById('stat-noon').textContent    = bn ? `দুপুর-বিকেল: ${nc}টি` : `Noon-Eve: ${nc}`;
+  document.getElementById('stat-evening').textContent = bn ? `সন্ধ্যা-রাত: ${ec}টি` : `Night: ${ec}`;
+}
+
+/* ===== RENDER: BAKSHIGANJ ===== */
+function renderSimpleList(containerId, routes, routeKey) {
+  const wrap  = document.getElementById(containerId);
+  const noRes = document.getElementById(routeKey + '-noresult');
+  if (!wrap) return;
+
+  const isEn = lang === 'en';
+  const fv = fromValue.trim(), tv = toValue.trim();
+
+  const filtered = routes.filter(b => {
+    if (!fv && !tv) return true;
+    const hay = norm([b.name,b.nameEn,b.from,b.fromEn,b.dest,b.destEn,...(b.phones||[])].filter(Boolean).join(' '));
+    if (fv && !hay.includes(norm(fv))) return false;
+    if (tv && !hay.includes(norm(tv))) return false;
+    return true;
+  });
+
+  if (!filtered.length) { wrap.innerHTML = ''; if (noRes) noRes.style.display = 'block'; return; }
+  if (noRes) noRes.style.display = 'none';
+
+  wrap.innerHTML = filtered.map((b, rank) => {
+    const name   = isEn ? b.nameEn : b.name;
+    const from   = isEn ? b.fromEn : b.from;
+    const dest   = isEn ? b.destEn : b.dest;
+    const time   = isEn ? b.timeEn : b.time;
+    const period = isEn ? (b.periodEn||'') : (b.period||'');
+    const phones = b.phones || [];
+    const pillsHtml = phones.map(p => {
+      const d = phoneDigits(p);
+      return `<a class="phone-pill" href="tel:${d}">${callSvg}<span>${p}</span></a>`;
+    }).join('');
+    return `<div class="div-card" style="animation-delay:${rank*.04}s">
+      <div class="div-card-top">
+        <div class="div-card-name">${name}</div>
+        <span class="meta-chip time">${timeSvg}${time}${period ? ` (${period})` : ''}</span>
+      </div>
+      <div class="div-route-info">
+        <span class="meta-chip place">${pinSvg}${from}</span>
+        <span style="color:var(--text-3);font-size:.75rem;align-self:center">→</span>
+        <span class="meta-chip dest">${pinSvg}${dest}</span>
+      </div>
+      <div class="phone-grid">${pillsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== RENDER: JHENAIGATI ===== */
+function renderJhenaigatiList() {
+  const wrap  = document.getElementById('jhenaigati-cards');
+  const noRes = document.getElementById('jhenaigati-noresult');
+  if (!wrap) return;
+
+  const isEn = lang === 'en';
+  const fv = fromValue.trim(), tv = toValue.trim();
+
+  const filtered = jhenaigatiRoutes.filter(b => {
+    if (!fv && !tv) return true;
+    const hay = norm([b.name,b.nameEn,b.from,b.fromEn,b.dest,b.destEn,...(b.phones||[])].filter(Boolean).join(' '));
+    if (fv && !hay.includes(norm(fv))) return false;
+    if (tv && !hay.includes(norm(tv))) return false;
+    return true;
+  });
+
+  if (!filtered.length) { wrap.innerHTML = ''; noRes.style.display = 'block'; return; }
+  noRes.style.display = 'none';
+
+  wrap.innerHTML = filtered.map((b, rank) => {
+    const name   = isEn ? b.nameEn : b.name;
+    const from   = isEn ? b.fromEn : b.from;
+    const dest   = isEn ? b.destEn : b.dest;
+    const time   = isEn ? b.timeEn : b.time;
+    const tDhaka = isEn ? (b.timeDhakaEn||'') : (b.timeDhaka||'');
+    const phones = b.phones || [];
+    const pillsHtml = phones.map(p => {
+      const d = phoneDigits(p);
+      return `<a class="phone-pill" href="tel:${d}">${callSvg}<span>${p}</span></a>`;
+    }).join('');
+    return `<div class="div-card" style="border-left-color:#14b8a6;animation-delay:${rank*.04}s">
+      <div class="div-card-top">
+        <div class="div-card-name">${name}</div>
+        <span class="meta-chip time">${timeSvg}${time}</span>
+      </div>
+      <div class="div-route-info">
+        <span class="meta-chip place">${pinSvg}${from}</span>
+        <span style="color:var(--text-3);font-size:.75rem;align-self:center">→</span>
+        <span class="meta-chip dest">${pinSvg}${dest}</span>
+      </div>
+      ${tDhaka ? `<div class="div-time-row">${timeSvg}<span>${isEn?'Arrives Dhaka:':'ঢাকা পৌঁছায়:'} <strong>${tDhaka}</strong></span></div>` : ''}
+      <div class="phone-grid">${pillsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== RENDER: DIVISION ===== */
+function renderDivisionCards(key) {
+  const data = divisionRoutes[key];
+  const wrap = document.getElementById(key + '-cards');
+  if (!wrap || !data) return;
+
+  const isEn = lang === 'en';
+  const colors = {chittagong:'#ef4444',khulna:'#0891b2',barisal:'#8b5cf6',rajshahi:'#f97316',rangpur:'#10b981',sylhet:'#ec4899'};
+  const col = colors[key] || 'var(--primary)';
+
+  wrap.innerHTML = data.map((b, rank) => {
+    const name      = isEn ? b.nameEn : b.name;
+    const from      = isEn ? b.fromEn : b.from;
+    const dest      = isEn ? b.destEn : b.dest;
+    const timeFrom  = isEn ? b.timeFromEn : b.timeFrom;
+    const timeTo    = isEn ? b.timeToEn   : b.timeTo;
+    const phones    = b.phones || [];
+    const pillsHtml = phones.map(p => {
+      const d = phoneDigits(p);
+      return `<a class="phone-pill" href="tel:${d}">${callSvg}<span>${p}</span></a>`;
+    }).join('');
+    return `<div class="div-card" style="border-left-color:${col};animation-delay:${rank*.05}s">
+      <div class="div-card-top"><div class="div-card-name">${name}</div></div>
+      <div class="div-route-info">
+        <span class="meta-chip place">${pinSvg}${from}</span>
+        <span style="color:var(--text-3);font-size:.75rem;align-self:center">→</span>
+        <span class="meta-chip dest">${pinSvg}${dest}</span>
+      </div>
+      <div class="div-time-row">
+        ${timeSvg}
+        <span>${isEn?'Departs':'ছাড়ে'}: <strong>${timeFrom}</strong></span>
+        ${timeTo ? `&nbsp;·&nbsp;<span>${isEn?'Arrives':'পৌঁছায়'}: <strong>${timeTo}</strong></span>` : ''}
+      </div>
+      <div class="phone-grid">${pillsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== LANGUAGE ===== */
+function updateLangTexts() {
+  const l = lang;
+  document.querySelectorAll('[data-bn]').forEach(el => {
+    if (el.dataset[l]) el.textContent = el.dataset[l];
+  });
+  document.querySelectorAll('.tab-label').forEach(el => {
+    if (el.dataset[l]) el.textContent = el.dataset[l];
+  });
+  document.querySelectorAll('.route-btn span[data-bn]').forEach(el => {
+    if (el.dataset[l]) el.textContent = el.dataset[l];
+  });
+  const fi = document.getElementById('fromInput');
+  const ti = document.getElementById('toInput');
+  if (fi) fi.placeholder = l === 'bn' ? fi.dataset.placeholderBn : fi.dataset.placeholderEn;
+  if (ti) ti.placeholder = l === 'bn' ? ti.dataset.placeholderBn : ti.dataset.placeholderEn;
+}
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('btnBN').classList.toggle('active', l === 'bn');
+  document.getElementById('btnEN').classList.toggle('active', l === 'en');
+  document.documentElement.lang = l;
+
+  document.getElementById('heroTitle').textContent = l === 'bn' ? 'শেরপুর বাস সময়সূচি' : 'Sherpur Bus Schedule';
+  document.getElementById('heroSub').textContent   = l === 'bn' ? 'সকল রুটের বাস ও যোগাযোগ নম্বর' : 'All routes, schedules & contacts';
+  document.getElementById('labelFrom').textContent = l === 'bn' ? 'যাত্রা শুরু' : 'From';
+  document.getElementById('labelTo').textContent   = l === 'bn' ? 'গন্তব্য' : 'To';
+  document.getElementById('tcAll').textContent     = l === 'bn' ? 'সব সময়' : 'All Time';
+  document.getElementById('tcMorning').textContent = l === 'bn' ? 'সকাল' : 'Morning';
+  document.getElementById('tcNoon').textContent    = l === 'bn' ? 'দুপুর-বিকেল' : 'Noon-Eve';
+  document.getElementById('tcEvening').textContent = l === 'bn' ? 'সন্ধ্যা-রাত' : 'Night';
+  document.getElementById('ctaLabel').textContent  = l === 'bn' ? 'বাস খুঁজুন' : 'Find Buses';
+
+  updateLangTexts();
+
+  if (activeRoute === 'dhaka') renderAll();
+  else if (activeRoute === 'bakshiganj') renderSimpleList('bakshiganj-cards', bakshiganjRoutes, 'bakshiganj');
+  else if (activeRoute === 'jhenaigati') renderJhenaigatiList();
+  else renderDivisionCards(activeRoute);
+}
+
+/* ===== INIT ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll();
+  renderSimpleList('bakshiganj-cards', bakshiganjRoutes, 'bakshiganj');
+  renderJhenaigatiList();
+  ['chittagong','khulna','barisal','rajshahi','rangpur','sylhet'].forEach(k => renderDivisionCards(k));
+});
+</script>
+
+</body>
+</html>
